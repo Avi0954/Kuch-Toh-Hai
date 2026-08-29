@@ -1,0 +1,60 @@
+.opening-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  background-color: #000;
+  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+
+.opening-container.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 2s ease, transform 3s ease-out;
+}
+
+.title-container.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.enter-button {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-md) var(--spacing-lg);
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.enter-button::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 1px;
+  background-color: var(--text-primary);
+  transition: width var(--transition-fast);
+}
+
+.enter-button:hover::after {
+  width: 50%;
+}
+
+.enter-button:hover {
+  color: #fff;
+}

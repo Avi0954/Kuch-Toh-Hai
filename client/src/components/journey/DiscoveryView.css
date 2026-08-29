@@ -1,0 +1,56 @@
+.discovery-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: var(--spacing-xxl) var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  transition: opacity var(--transition-slow), transform var(--transition-slow), filter var(--transition-slow);
+}
+
+.discovery-container.fade-back {
+  opacity: 0;
+  transform: scale(0.95) translateY(-2vh);
+  filter: blur(10px);
+  pointer-events: none;
+}
+
+.discovery-header {
+  margin-bottom: var(--spacing-xl);
+  opacity: 0.5;
+}
+
+.track-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding-bottom: 20vh; /* space for player */
+}
+
+.track-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-lg);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast), transform var(--transition-medium);
+  padding: var(--spacing-sm) 0;
+}
+
+.track-item:hover {
+  opacity: 1;
+  transform: translateX(20px);
+}
+
+.track-title {
+  color: var(--text-primary);
+}
+
+.track-artist {
+  color: var(--text-muted);
+}
