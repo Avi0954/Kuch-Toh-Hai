@@ -1,0 +1,9 @@
+{
+  "name": "kuch-toh-hai",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ]
+}
