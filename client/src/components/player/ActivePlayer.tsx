@@ -6,7 +6,7 @@ import './ActivePlayer.css';
 
 export const ActivePlayer: React.FC = () => {
   const { phase, setPhase } = useJourneyStore();
-  const { currentTrack, isPlaying, pause, resume } = usePlayerStore();
+  const { currentTrack, isPlaying, pause, resume, progressMs } = usePlayerStore();
 
   if (phase !== 'playing' || !currentTrack) return null;
 
@@ -21,6 +21,11 @@ export const ActivePlayer: React.FC = () => {
       resume();
     }
   };
+
+  // Minimal Progress Bar at bottom
+  const progressPercent = currentTrack.durationMs > 0 
+    ? (progressMs / currentTrack.durationMs) * 100 
+    : 0;
 
   return (
     <div className="active-player-container animate-fade-in">
@@ -52,7 +57,7 @@ export const ActivePlayer: React.FC = () => {
 
       {/* Minimal Progress Bar at bottom */}
       <div className="player-progress-container">
-        <div className="player-progress-bar" style={{ width: '30%' }}></div>
+        <div className="player-progress-bar" style={{ width: `${progressPercent}%` }}></div>
       </div>
 
     </div>

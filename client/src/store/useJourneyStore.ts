@@ -13,6 +13,6 @@ interface JourneyStore {
 export const useJourneyStore = create<JourneyStore>((set) => ({
   phase: 'opening',
   setPhase: (phase) => set({ phase }),
-  ambientColor: '#0a0a0a', // Default dark
+  ambientColor: '#1a1311', // Deep warm evening base
   setAmbientColor: (color) => set({ ambientColor: color }),
 }));

@@ -1,60 +1,116 @@
-.opening-container {
+.opening-choreography {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
-  background-color: #000;
-  transition: opacity var(--transition-slow), visibility var(--transition-slow);
+  transition: opacity 2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.opening-container.fade-out {
+.opening-choreography.exit {
   opacity: 0;
-  visibility: hidden;
   pointer-events: none;
 }
 
-.title-container {
+/* 1. Environment gradually appears */
+.opening-black-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: -1;
+  transition: opacity 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.opening-black-overlay.fade-out {
+  opacity: 0;
+}
+
+/* Content Container */
+.opening-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  opacity: 0;
-  transform: scale(0.95);
-  transition: opacity 2s ease, transform 3s ease-out;
+  text-align: center;
 }
 
-.title-container.visible {
+/* 2. Typography enters */
+.opening-subtitle {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 2s ease, transform 3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  letter-spacing: 0.2em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.opening-subtitle.visible {
+  opacity: 0.6;
+  transform: translateY(0);
+}
+
+/* 3. Title appears */
+.opening-title {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 2.5s ease, transform 4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  margin-bottom: var(--spacing-md);
+}
+
+.opening-title.visible {
   opacity: 1;
   transform: scale(1);
 }
 
-.enter-button {
-  margin-top: var(--spacing-xl);
-  padding: var(--spacing-md) var(--spacing-lg);
-  position: relative;
-  transition: color var(--transition-fast);
-}
-
-.enter-button::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+/* 4. Supporting visual element */
+.opening-decorative-line {
   width: 0;
   height: 1px;
   background-color: var(--text-primary);
-  transition: width var(--transition-fast);
+  opacity: 0;
+  transition: width 2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 2s ease;
+  margin-bottom: var(--spacing-xl);
 }
 
-.enter-button:hover::after {
-  width: 50%;
+.opening-decorative-line.visible {
+  width: 60px;
+  opacity: 0.3;
 }
 
-.enter-button:hover {
+/* 5. Interface gradually reveals itself */
+.opening-enter-btn {
+  opacity: 0;
+  transform: translateY(15px);
+  transition: opacity 1.5s ease, transform 2s cubic-bezier(0.2, 0.8, 0.2, 1), color 0.3s ease;
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-md);
+  position: relative;
+}
+
+.opening-enter-btn.visible {
+  opacity: 0.7;
+  transform: translateY(0);
+}
+
+.opening-enter-btn:hover {
+  opacity: 1;
   color: #fff;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .opening-choreography,
+  .opening-black-overlay,
+  .opening-subtitle,
+  .opening-title,
+  .opening-decorative-line,
+  .opening-enter-btn {
+    transition-duration: 0.1s !important;
+    transform: none !important;
+  }
 }

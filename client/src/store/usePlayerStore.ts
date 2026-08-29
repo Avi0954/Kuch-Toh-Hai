@@ -7,6 +7,7 @@ interface PlayerStore extends PlayerState {
   resume: () => void;
   setProgress: (ms: number) => void;
   setVolume: (level: number) => void;
+  setStatus: (status: PlayerState['status']) => void;
 }
 
 export const usePlayerStore = create<PlayerStore>((set) => ({
@@ -23,4 +24,5 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   resume: () => set({ isPlaying: true, status: 'PLAYING' }),
   setProgress: (progressMs) => set({ progressMs }),
   setVolume: (volume) => set({ volume }),
+  setStatus: (status) => set({ status }),
 }));

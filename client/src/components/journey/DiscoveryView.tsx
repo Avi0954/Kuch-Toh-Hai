@@ -32,7 +32,7 @@ export const DiscoveryView: React.FC = () => {
   };
 
   const handleMouseLeave = () => {
-    setAmbientColor('#050505');
+    setAmbientColor('#1a1311');
   };
 
   if (phase !== 'discovery' && phase !== 'playing') return null;

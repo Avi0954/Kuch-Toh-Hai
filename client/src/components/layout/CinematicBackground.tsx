@@ -1,22 +1,34 @@
 import React from 'react';
 import { useJourneyStore } from '../../store/useJourneyStore';
+import { FilmGrain } from '../visual/FilmGrain';
+import { Vignette } from '../visual/Vignette';
+import { BokehLights } from '../visual/BokehLights';
+import { DustParticles } from '../visual/DustParticles';
 import './CinematicBackground.css';
 
 export const CinematicBackground: React.FC = () => {
   const { ambientColor, phase } = useJourneyStore();
 
-  const isDimmed = phase === 'opening' || phase === 'title_reveal';
-
   return (
-    <div 
-      className="cinematic-bg-container"
-      style={{
-        backgroundColor: isDimmed ? '#000000' : ambientColor,
-        opacity: isDimmed ? 0 : 1
-      }}
-    >
-      <div className="noise-overlay"></div>
-      <div className="gradient-overlay"></div>
-    </div>
+    <>
+      {/* Base Layer */}
+      <div 
+        className="cinematic-bg-container"
+        style={{
+          backgroundColor: ambientColor,
+          opacity: 1
+        }}
+      >
+        <div className="gradient-overlay"></div>
+      </div>
+
+      {/* Atmospheric FX Layers */}
+      <BokehLights />
+      <DustParticles />
+
+      {/* Persistent Lens FX Layers */}
+      <Vignette />
+      <FilmGrain />
+    </>
   );
 };
