@@ -1,12 +1,13 @@
 import React from 'react';
-import { Play, Pause, ChevronLeft } from 'lucide-react';
+import { Play, Pause, ChevronLeft, SkipBack, SkipForward } from 'lucide-react';
 import { useJourneyStore } from '../../store/useJourneyStore';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { PlayerManager } from '../../services/PlayerManager';
 import './ActivePlayer.css';
 
 export const ActivePlayer: React.FC = () => {
   const { phase, setPhase } = useJourneyStore();
-  const { currentTrack, isPlaying, pause, resume, progressMs } = usePlayerStore();
+  const { currentTrack, isPlaying, progressMs, status } = usePlayerStore();
 
   if (phase !== 'playing' || !currentTrack) return null;
 
@@ -14,13 +15,9 @@ export const ActivePlayer: React.FC = () => {
     setPhase('discovery');
   };
 
-  const togglePlay = () => {
-    if (isPlaying) {
-      pause();
-    } else {
-      resume();
-    }
-  };
+  const togglePlay = () => PlayerManager.togglePlay();
+  const handleNext = () => PlayerManager.next();
+  const handlePrev = () => PlayerManager.previous();
 
   // Minimal Progress Bar at bottom
   const progressPercent = currentTrack.durationMs > 0 
@@ -46,11 +43,24 @@ export const ActivePlayer: React.FC = () => {
         <div className="player-meta">
           <h2 className="text-title">{currentTrack.title}</h2>
           <p className="text-body">{currentTrack.artist.name}</p>
+          {status === 'ERROR' && (
+            <p className="text-caption" style={{ color: '#ff6b6b', marginTop: '8px' }}>
+              Track unavailable. Skipping...
+            </p>
+          )}
         </div>
         
         <div className="player-controls">
-          <button className="btn-invisible control-btn" onClick={togglePlay}>
+          <button className="btn-invisible control-btn" onClick={handlePrev}>
+            <SkipBack size={24} strokeWidth={1.5} />
+          </button>
+          
+          <button className="btn-invisible control-btn main-play-btn" onClick={togglePlay}>
             {isPlaying ? <Pause size={42} strokeWidth={1} /> : <Play size={42} strokeWidth={1} />}
+          </button>
+          
+          <button className="btn-invisible control-btn" onClick={handleNext}>
+            <SkipForward size={24} strokeWidth={1.5} />
           </button>
         </div>
       </div>

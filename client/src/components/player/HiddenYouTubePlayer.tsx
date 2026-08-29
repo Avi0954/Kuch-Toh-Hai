@@ -1,80 +1,21 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import YouTube, { YouTubeEvent, YouTubeProps } from 'react-youtube';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { PlayerManager } from '../../services/PlayerManager';
 
 export const HiddenYouTubePlayer: React.FC = () => {
-  const { currentTrack, isPlaying, volume, setProgress, setStatus, pause } = usePlayerStore();
-  const playerRef = useRef<any>(null);
-  const progressInterval = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (playerRef.current) {
-      if (isPlaying) {
-        playerRef.current.playVideo();
-        startProgressTracking();
-      } else {
-        playerRef.current.pauseVideo();
-        stopProgressTracking();
-      }
-    }
-  }, [isPlaying]);
-
-  useEffect(() => {
-    if (playerRef.current) {
-      playerRef.current.setVolume(volume);
-    }
-  }, [volume]);
-
-  const startProgressTracking = () => {
-    stopProgressTracking();
-    progressInterval.current = window.setInterval(() => {
-      if (playerRef.current) {
-        const timeSeconds = playerRef.current.getCurrentTime();
-        if (timeSeconds) {
-          setProgress(timeSeconds * 1000);
-        }
-      }
-    }, 1000);
-  };
-
-  const stopProgressTracking = () => {
-    if (progressInterval.current) {
-      clearInterval(progressInterval.current);
-      progressInterval.current = null;
-    }
-  };
+  const currentTrack = usePlayerStore(state => state.currentTrack);
 
   const onReady = (event: YouTubeEvent) => {
-    playerRef.current = event.target;
-    playerRef.current.setVolume(volume);
-    if (isPlaying) {
-      playerRef.current.playVideo();
-    }
+    PlayerManager.attachPlayer(event.target);
   };
 
   const onStateChange = (event: YouTubeEvent) => {
-    // 0 = ended, 1 = playing, 2 = paused, 3 = buffering
-    switch (event.data) {
-      case 0:
-        setStatus('IDLE');
-        pause();
-        stopProgressTracking();
-        setProgress(0);
-        break;
-      case 1:
-        setStatus('PLAYING');
-        startProgressTracking();
-        break;
-      case 2:
-        setStatus('PAUSED');
-        stopProgressTracking();
-        break;
-      case 3:
-        setStatus('BUFFERING');
-        break;
-      default:
-        break;
-    }
+    PlayerManager.onStateChange(event.data);
+  };
+
+  const onError = (event: YouTubeEvent) => {
+    PlayerManager.onError(event.data);
   };
 
   const opts: YouTubeProps['opts'] = {
@@ -101,7 +42,7 @@ export const HiddenYouTubePlayer: React.FC = () => {
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}
-        onError={() => setStatus('ERROR')}
+        onError={onError}
       />
     </div>
   );

@@ -29,6 +29,8 @@ export type Playlist = {
 };
 
 export type PlayerState = {
+  queue: Track[];
+  currentIndex: number;
   currentTrack: Track | null;
   isPlaying: boolean;
   progressMs: number;
@@ -36,6 +38,7 @@ export type PlayerState = {
   volume: number;
   isMuted: boolean;
   status: 'IDLE' | 'LOADING' | 'PLAYING' | 'PAUSED' | 'BUFFERING' | 'ERROR';
+  playerReady: boolean;
 };
 
 export type YouTubeVideo = {

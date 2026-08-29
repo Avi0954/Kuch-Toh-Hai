@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useJourneyStore } from '../../store/useJourneyStore';
-import { usePlayerStore } from '../../store/usePlayerStore';
+import { PlayerManager } from '../../services/PlayerManager';
 import { apiClient } from '../../services/apiClient';
 import { Track } from '@kuch-toh-hai/shared';
 import './DiscoveryView.css';
 
 export const DiscoveryView: React.FC = () => {
   const { phase, setPhase, setAmbientColor } = useJourneyStore();
-  const { play } = usePlayerStore();
   const [tracks, setTracks] = useState<Track[]>([]);
 
   useEffect(() => {
@@ -19,8 +18,8 @@ export const DiscoveryView: React.FC = () => {
     fetchMusic();
   }, []);
 
-  const handlePlayTrack = (track: Track) => {
-    play(track);
+  const handlePlayTrack = (track: Track, index: number) => {
+    PlayerManager.loadQueue(tracks, index);
     setPhase('playing');
   };
 
@@ -42,11 +41,11 @@ export const DiscoveryView: React.FC = () => {
       <div className="discovery-header text-caption">Explore</div>
       
       <div className="track-list no-scrollbar">
-        {tracks.map((track) => (
+        {tracks.map((track, index) => (
           <div 
             key={track.id} 
             className="track-item"
-            onClick={() => handlePlayTrack(track)}
+            onClick={() => handlePlayTrack(track, index)}
             onMouseEnter={() => handleMouseEnter(track)}
             onMouseLeave={handleMouseLeave}
           >
