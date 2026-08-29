@@ -7,7 +7,7 @@ import { DustParticles } from '../visual/DustParticles';
 import './CinematicBackground.css';
 
 export const CinematicBackground: React.FC = () => {
-  const { ambientColor, phase } = useJourneyStore();
+  const { ambientColor } = useJourneyStore();
 
   return (
     <>

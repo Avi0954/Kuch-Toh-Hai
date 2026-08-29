@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { CinematicBackground } from './components/layout/CinematicBackground';
 import { OpeningSequence } from './components/journey/OpeningSequence';
 import { DiscoveryView } from './components/journey/DiscoveryView';

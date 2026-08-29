@@ -1,4 +1,4 @@
-import { SearchResult, Track, Playlist } from '@kuch-toh-hai/shared';
+import type { SearchResult, Playlist } from '@kuch-toh-hai/shared';
 import { mockTracks, mockPlaylists } from './mockData';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK_DATA === 'true';

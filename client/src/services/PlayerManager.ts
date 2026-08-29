@@ -1,4 +1,4 @@
-import { Track } from '@kuch-toh-hai/shared';
+import type { Track } from '@kuch-toh-hai/shared';
 import { usePlayerStore } from '../store/usePlayerStore';
 
 class PlayerManagerService {

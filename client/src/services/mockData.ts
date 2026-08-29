@@ -1,4 +1,4 @@
-import { Track, Playlist } from '@kuch-toh-hai/shared';
+import type { Track, Playlist } from '@kuch-toh-hai/shared';
 
 export const mockTracks: Track[] = [
   {

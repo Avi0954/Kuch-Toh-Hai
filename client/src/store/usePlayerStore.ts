@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PlayerState, Track } from '@kuch-toh-hai/shared';
+import type { PlayerState } from '@kuch-toh-hai/shared';
 
 interface PlayerStore extends PlayerState {
   updateState: (state: Partial<PlayerState>) => void;

@@ -1,5 +1,6 @@
 import React from 'react';
-import YouTube, { YouTubeEvent, YouTubeProps } from 'react-youtube';
+import YouTube from 'react-youtube';
+import type { YouTubeEvent, YouTubeProps } from 'react-youtube';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { PlayerManager } from '../../services/PlayerManager';
 
