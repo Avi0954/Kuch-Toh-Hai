@@ -68,7 +68,7 @@ export const UnifiedPlayerView: React.FC = () => {
     <main className="unified-container animate-fade-in">
       <div className="unified-clock">{currentTime}</div>
       <header className="unified-header">
-        <h1 className="unified-logo">Kuch Toh Hai.</h1>
+        <h1 className="unified-logo">Kuch Toh Hai</h1>
       </header>
 
       {/* PILL PLAYER */}
