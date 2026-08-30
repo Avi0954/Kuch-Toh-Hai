@@ -12,6 +12,8 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   isPlaying: false,
   progressMs: 0,
   durationMs: 0,
+  volume: 100,
+  isMuted: false,
   status: 'IDLE',
   playerReady: false,
   errorMessage: undefined,

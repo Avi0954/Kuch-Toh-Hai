@@ -10,6 +10,10 @@ class PlayerManagerService {
   public attachPlayer(playerInstance: any) {
     this.ytPlayer = playerInstance;
     usePlayerStore.getState().updateState({ playerReady: true });
+    
+    // Apply initial volume
+    const state = usePlayerStore.getState();
+    this.ytPlayer.setVolume(state.isMuted ? 0 : state.volume);
   }
 
   private initTimeout: number | null = null;
@@ -69,6 +73,37 @@ class PlayerManagerService {
       this.ytPlayer.seekTo(ms / 1000, true);
       usePlayerStore.getState().updateState({ progressMs: ms });
     }
+  }
+
+  public setVolume(level: number) {
+    if (this.ytPlayer) {
+      if (level > 0 && typeof this.ytPlayer.unMute === 'function') {
+        this.ytPlayer.unMute();
+      } else if (level === 0 && typeof this.ytPlayer.mute === 'function') {
+        this.ytPlayer.mute();
+      }
+      this.ytPlayer.setVolume(level);
+    }
+    usePlayerStore.getState().updateState({ volume: level, isMuted: level === 0 });
+  }
+
+  public toggleMute() {
+    const state = usePlayerStore.getState();
+    const newMuted = !state.isMuted;
+    
+    // If we're unmuting and volume was 0, default to 50%
+    const restoreVolume = (state.volume === 0 && !newMuted) ? 50 : state.volume;
+
+    if (this.ytPlayer) {
+      if (newMuted) {
+        if (typeof this.ytPlayer.mute === 'function') this.ytPlayer.mute();
+        this.ytPlayer.setVolume(0);
+      } else {
+        if (typeof this.ytPlayer.unMute === 'function') this.ytPlayer.unMute();
+        this.ytPlayer.setVolume(restoreVolume);
+      }
+    }
+    usePlayerStore.getState().updateState({ isMuted: newMuted, volume: newMuted ? 0 : restoreVolume });
   }
 
   // --- YouTube Event Handlers ---

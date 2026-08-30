@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import YouTube from 'react-youtube';
 import type { YouTubeEvent, YouTubeProps } from 'react-youtube';
 import { PlayerManager } from '../../services/PlayerManager';
@@ -8,17 +8,6 @@ export const HiddenYouTubePlayer: React.FC = () => {
 
   const onReady = (event: YouTubeEvent) => {
     PlayerManager.attachPlayer(event.target);
-    
-    // The YouTube iframe can sometimes steal focus and intercept hardware media keys.
-    // By forcing tabindex to -1, we ensure it never receives focus, allowing the OS to handle volume.
-    try {
-      const iframe = event.target.getIframe();
-      if (iframe) {
-        iframe.setAttribute('tabindex', '-1');
-      }
-    } catch (err) {
-      console.warn("Could not set tabindex on YouTube iframe", err);
-    }
   };
 
   const onStateChange = (event: YouTubeEvent) => {
@@ -28,21 +17,6 @@ export const HiddenYouTubePlayer: React.FC = () => {
   const onError = (event: YouTubeEvent) => {
     PlayerManager.onError(event.data);
   };
-
-  useEffect(() => {
-    // Forcefully remove focus from any iframe to prevent it from intercepting media keys
-    const handleFocus = (e: FocusEvent) => {
-      const target = e.target as HTMLElement;
-      if (target?.tagName === 'IFRAME') {
-        target.blur();
-        // Also move focus back to body
-        window.focus();
-      }
-    };
-    
-    window.addEventListener('focus', handleFocus, true);
-    return () => window.removeEventListener('focus', handleFocus, true);
-  }, []);
 
   const opts: YouTubeProps['opts'] = {
     height: '0',
