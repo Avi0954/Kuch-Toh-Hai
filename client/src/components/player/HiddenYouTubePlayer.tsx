@@ -1,11 +1,10 @@
 import React from 'react';
 import YouTube from 'react-youtube';
 import type { YouTubeEvent, YouTubeProps } from 'react-youtube';
-import { usePlayerStore } from '../../store/usePlayerStore';
 import { PlayerManager } from '../../services/PlayerManager';
+import { AppConfig } from '../../config';
 
 export const HiddenYouTubePlayer: React.FC = () => {
-  const currentTrack = usePlayerStore(state => state.currentTrack);
 
   const onReady = (event: YouTubeEvent) => {
     PlayerManager.attachPlayer(event.target);
@@ -31,15 +30,15 @@ export const HiddenYouTubePlayer: React.FC = () => {
       modestbranding: 1,
       rel: 0,
       showinfo: 0,
+      listType: 'playlist',
+      list: AppConfig.youtubePlaylistId,
+      origin: window.location.origin
     },
   };
-
-  if (!currentTrack) return null;
 
   return (
     <div style={{ position: 'fixed', top: -9999, left: -9999, opacity: 0, pointerEvents: 'none' }}>
       <YouTube
-        videoId={currentTrack.id}
         opts={opts}
         onReady={onReady}
         onStateChange={onStateChange}

@@ -18,40 +18,7 @@ class PlayerManagerService {
 
   private initTimeout: number | null = null;
 
-  public loadQueue(tracks: Track[], startIndex: number = 0) {
-    if (tracks.length === 0) return;
-    
-    this.clearErrorRecovery();
-    this.clearInitTimeout();
 
-    usePlayerStore.getState().updateState({
-      queue: tracks,
-      currentIndex: startIndex,
-      currentTrack: tracks[startIndex],
-      durationMs: tracks[startIndex].durationMs,
-      progressMs: 0,
-      status: 'LOADING',
-      isPlaying: true, // Auto-play when loading a new queue
-      errorMessage: undefined,
-    });
-
-    // Safety timeout: if player isn't ready/playing in 10s, throw an error
-    this.initTimeout = window.setTimeout(() => {
-      const state = usePlayerStore.getState();
-      if (state.status === 'LOADING' || state.status === 'BUFFERING') {
-        usePlayerStore.getState().updateState({ 
-          status: 'ERROR', 
-          isPlaying: false,
-          errorMessage: 'Network slow hai. Thoda intezaar karein ya agla gaana sunein.'
-        });
-        
-        // Auto-skip after 5 seconds on timeout
-        this.errorTimeout = window.setTimeout(() => {
-          this.next();
-        }, 5000);
-      }
-    }, 10000);
-  }
 
   public play() {
     if (this.ytPlayer && usePlayerStore.getState().currentTrack) {
@@ -81,20 +48,8 @@ class PlayerManagerService {
   public next() {
     this.clearErrorRecovery();
     this.clearInitTimeout();
-    const state = usePlayerStore.getState();
-    if (state.queue.length === 0) return;
-
-    const nextIndex = state.currentIndex + 1;
-    if (nextIndex < state.queue.length) {
-      this.loadQueue(state.queue, nextIndex);
-    } else {
-      // Reached the end of the queue
-      this.stopProgressTracking();
-      usePlayerStore.getState().updateState({
-        isPlaying: false,
-        status: 'IDLE',
-        progressMs: 0,
-      });
+    if (this.ytPlayer) {
+      this.ytPlayer.nextVideo();
     }
   }
 
@@ -102,16 +57,15 @@ class PlayerManagerService {
     this.clearErrorRecovery();
     this.clearInitTimeout();
     const state = usePlayerStore.getState();
-    if (state.queue.length === 0) return;
 
-    // If we're more than 3 seconds in, restart current track
     if (state.progressMs > 3000 && this.ytPlayer) {
       this.seek(0);
       return;
     }
 
-    const prevIndex = Math.max(0, state.currentIndex - 1);
-    this.loadQueue(state.queue, prevIndex);
+    if (this.ytPlayer) {
+      this.ytPlayer.previousVideo();
+    }
   }
 
   public seek(ms: number) {
@@ -152,6 +106,24 @@ class PlayerManagerService {
       case 1: // Playing
         this.clearErrorRecovery();
         this.clearInitTimeout();
+        
+        // Extract metadata dynamically
+        if (this.ytPlayer && this.ytPlayer.getVideoData) {
+           const videoData = this.ytPlayer.getVideoData();
+           const duration = this.ytPlayer.getDuration();
+           
+           if (videoData && videoData.video_id) {
+             const track: Track = {
+               id: videoData.video_id,
+               title: videoData.title,
+               artist: { id: 'yt-artist', name: videoData.author },
+               durationMs: (duration || 0) * 1000,
+               artwork: [{ url: `https://i.ytimg.com/vi/${videoData.video_id}/maxresdefault.jpg`, width: 1280, height: 720 }]
+             };
+             usePlayerStore.getState().updateState({ currentTrack: track, durationMs: track.durationMs });
+           }
+        }
+
         usePlayerStore.getState().updateState({ status: 'PLAYING', isPlaying: true, errorMessage: undefined });
         this.startProgressTracking();
         break;

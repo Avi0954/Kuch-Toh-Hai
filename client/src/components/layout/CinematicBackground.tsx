@@ -29,9 +29,6 @@ export const CinematicBackground: React.FC = () => {
           className={`cinematic-bg-image ${idx === bgIndex ? 'active' : ''}`}
         />
       ))}
-      
-      {/* Dark overlay to ensure UI legibility */}
-      <div className="gradient-overlay"></div>
     </div>
   );
 };

@@ -13,5 +13,5 @@ export const AppConfig = {
   // Replace this with your YouTube Playlist ID.
   // Example: 'PL...'
   // The app will dynamically fetch all songs from this playlist.
-  youtubePlaylistId: 'PL4fGSI1pDJn6jOW_S5g_0U0L8ZIDP_d55', // Default placeholder playlist
+  youtubePlaylistId: 'PLRbaSncJ_2M8',
 };

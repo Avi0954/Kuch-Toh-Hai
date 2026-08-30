@@ -1,10 +1,7 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX, ListMusic, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PlayerManager } from '../../services/PlayerManager';
 import { usePlayerStore } from '../../store/usePlayerStore';
-import { apiClient } from '../../services/apiClient';
-import { AppConfig } from '../../config';
-import type { Track } from '@kuch-toh-hai/shared';
 import './UnifiedPlayerView.css';
 
 // -----------------------------------------------------------------------------
@@ -23,14 +20,8 @@ const formatTime = (ms: number) => {
 // -----------------------------------------------------------------------------
 export const UnifiedPlayerView: React.FC = () => {
   
-  // Playlist State
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showPlaylist, setShowPlaylist] = useState(false);
-
   // Player State
   const currentTrack = usePlayerStore(state => state.currentTrack);
-  const currentTrackId = currentTrack?.id;
   const isPlaying = usePlayerStore(state => state.isPlaying);
   const volume = usePlayerStore(state => state.volume);
   const isMuted = usePlayerStore(state => state.isMuted);
@@ -40,34 +31,7 @@ export const UnifiedPlayerView: React.FC = () => {
 
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchMusic = async () => {
-      try {
-        setIsLoading(true);
-        const results = await apiClient.getPlaylistTracks(AppConfig.youtubePlaylistId);
-        if (isMounted) {
-          setTracks(results);
-          if (results.length > 0 && !currentTrack) {
-             PlayerManager.loadQueue(results, 0);
-             setTimeout(() => PlayerManager.pause(), 500); 
-          }
-        }
-      } catch (error: any) {
-        console.error("Failed to load tracks", error);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-    fetchMusic();
-    return () => { isMounted = false; };
-  }, [currentTrack]); 
-
   // Actions
-  const handlePlayTrack = useCallback((_track: Track, index: number) => {
-    PlayerManager.loadQueue(tracks, index);
-  }, [tracks]);
-
   const togglePlay = () => PlayerManager.togglePlay();
   const handleNext = () => PlayerManager.next();
   const handlePrev = () => PlayerManager.previous();
@@ -82,59 +46,19 @@ export const UnifiedPlayerView: React.FC = () => {
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
     const targetMs = percentage * durationMs;
-    // Note: Assuming PlayerManager.seek takes relative seconds, or we need to add absolute seek
-    // Wait, PlayerManager.seek takes relative offset. Let's do absolute seek.
-    const targetSeconds = targetMs / 1000;
-    // Our HiddenYouTubePlayer needs a way to seek absolute.
-    // For now, we calculate offset:
-    const offsetSec = targetSeconds - (progressMs / 1000);
-    PlayerManager.seek(offsetSec);
+    // Calculate relative offset for now if seek behavior is relative. Wait, the underlying API can seek directly. 
+    PlayerManager.seek(targetMs);
   };
 
-  const artworkUrl = currentTrack?.artwork.find(a => a.url.includes('maxresdefault'))?.url 
-    || currentTrack?.artwork.find(a => a.url.includes('hqdefault'))?.url 
-    || currentTrack?.artwork[0]?.url;
+  const artworkUrl = currentTrack?.artwork?.find(a => a.url.includes('maxresdefault'))?.url 
+    || currentTrack?.artwork?.find(a => a.url.includes('hqdefault'))?.url 
+    || currentTrack?.artwork?.[0]?.url;
 
   return (
     <main className="unified-container animate-fade-in">
       <header className="unified-header">
         <h1 className="unified-logo">Kuch Toh Hai.</h1>
       </header>
-
-      {/* FLOATING PLAYLIST DRAWER */}
-      {showPlaylist && (
-        <div className="playlist-drawer">
-          <div className="playlist-drawer-header">
-            <h3>Up Next</h3>
-            <button className="btn-invisible close-btn" onClick={() => setShowPlaylist(false)}>
-              <X size={20} />
-            </button>
-          </div>
-          <ul className="drawer-track-list no-scrollbar" role="list">
-            {isLoading ? (
-               <li className="drawer-empty">Loading...</li>
-            ) : tracks.length === 0 ? (
-               <li className="drawer-empty">No tracks found.</li>
-            ) : (
-              tracks.map((track, index) => (
-                <li 
-                  key={track.id} 
-                  className={`drawer-track-row ${currentTrackId === track.id ? 'active' : ''}`}
-                  onClick={() => handlePlayTrack(track, index)}
-                >
-                  <div className="drawer-track-meta">
-                    <span className="drawer-track-title">{track.title}</span>
-                    <span className="drawer-track-artist">{track.artist.name}</span>
-                  </div>
-                  {currentTrackId === track.id && isPlaying && (
-                    <div className="mini-equalizer"><span></span><span></span><span></span></div>
-                  )}
-                </li>
-              ))
-            )}
-          </ul>
-        </div>
-      )}
 
       {/* PILL PLAYER */}
       <div className="pill-wrapper">
@@ -175,9 +99,6 @@ export const UnifiedPlayerView: React.FC = () => {
                       {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
                     </button>
                   </div>
-                  <button className="btn-invisible pill-utility-btn" onClick={() => setShowPlaylist(!showPlaylist)}>
-                    <ListMusic size={16} />
-                  </button>
                 </div>
               </div>
               <p className="pill-artist">{currentTrack?.artist.name}</p>

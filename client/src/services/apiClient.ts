@@ -40,11 +40,8 @@ export const apiClient = {
       }
       return await response.json();
     } catch (error: any) {
-      console.warn("YouTube API failed, falling back to mock data.", error);
-      // Fallback to mock data so the user experience doesn't break
-      return new Promise((resolve) => {
-        setTimeout(() => resolve(mockTracks), 500);
-      });
+      console.error("YouTube API failed:", error);
+      throw error;
     }
   },
 
