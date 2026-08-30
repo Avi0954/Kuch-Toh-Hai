@@ -29,14 +29,28 @@ export const useGlobalKeybinds = () => {
           
         case 'ArrowRight':
           if (usePlayerStore.getState().currentTrack) {
-            PlayerManager.seek(10); // Seek forward 10s
+            const state = usePlayerStore.getState();
+            PlayerManager.seek(Math.min(state.durationMs, state.progressMs + 10000)); // Seek forward 10s
           }
           break;
           
         case 'ArrowLeft':
           if (usePlayerStore.getState().currentTrack) {
-            PlayerManager.seek(-10); // Seek backward 10s
+            const state = usePlayerStore.getState();
+            PlayerManager.seek(Math.max(0, state.progressMs - 10000)); // Seek backward 10s
           }
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault(); // Prevent page scroll
+          const currentVolUp = usePlayerStore.getState().volume;
+          PlayerManager.setVolume(Math.min(100, currentVolUp + 5));
+          break;
+
+        case 'ArrowDown':
+          e.preventDefault(); // Prevent page scroll
+          const currentVolDown = usePlayerStore.getState().volume;
+          PlayerManager.setVolume(Math.max(0, currentVolDown - 5));
           break;
       }
     };
