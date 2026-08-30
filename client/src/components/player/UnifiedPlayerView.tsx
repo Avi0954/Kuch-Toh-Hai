@@ -29,7 +29,6 @@ export const UnifiedPlayerView: React.FC = () => {
   const durationMs = currentTrack?.durationMs || 0;
   const progressPercent = durationMs > 0 ? (progressMs / durationMs) * 100 : 0;
 
-  const [showVolumeSlider, setShowVolumeSlider] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
 
   useEffect(() => {
@@ -89,29 +88,6 @@ export const UnifiedPlayerView: React.FC = () => {
             <div className="pill-meta">
               <div className="pill-meta-header">
                 <h2 className="pill-title">{currentTrack?.title || 'Connecting...'}</h2>
-                
-                {/* Utilities mapped to the right side of the meta header */}
-                <div className="pill-utilities">
-                  <div 
-                    className="pill-volume-wrapper"
-                    onMouseEnter={() => setShowVolumeSlider(true)}
-                    onMouseLeave={() => setShowVolumeSlider(false)}
-                  >
-                    <div className={`pill-volume-slider-container ${showVolumeSlider ? 'visible' : ''}`}>
-                      <input 
-                        type="range" 
-                        min="0" 
-                        max="100" 
-                        value={isMuted ? 0 : volume} 
-                        onChange={handleVolumeChange}
-                        className="pill-volume-slider"
-                      />
-                    </div>
-                    <button className="btn-invisible pill-utility-btn" onClick={toggleMute}>
-                      {isMuted || volume === 0 ? <VolumeX size={16} /> : <Volume2 size={16} />}
-                    </button>
-                  </div>
-                </div>
               </div>
               <p className="pill-artist">{currentTrack?.artist.name}</p>
             </div>
@@ -126,16 +102,35 @@ export const UnifiedPlayerView: React.FC = () => {
           </div>
 
           {/* 3. Right Controls */}
-          <div className="pill-controls">
-            <button className="btn-invisible pill-control-btn" onClick={handlePrev}>
-              <ChevronLeft size={20} />
-            </button>
-            <button className="btn-invisible pill-control-btn play-btn" onClick={togglePlay}>
-              {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
-            </button>
-            <button className="btn-invisible pill-control-btn" onClick={handleNext}>
-              <ChevronRight size={20} />
-            </button>
+          <div className="pill-controls-stack">
+            <div className="pill-controls">
+              <button className="btn-invisible pill-control-btn" onClick={handlePrev} aria-label="Previous">
+                <ChevronLeft size={18} />
+              </button>
+              <button className="btn-invisible pill-control-btn play-btn" onClick={togglePlay} aria-label="Play/Pause">
+                {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+              </button>
+              <button className="btn-invisible pill-control-btn" onClick={handleNext} aria-label="Next">
+                <ChevronRight size={18} />
+              </button>
+            </div>
+            <div className="pill-volume-always-visible">
+              <button className="btn-invisible pill-utility-btn-small" onClick={toggleMute} aria-label="Mute">
+                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </button>
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={isMuted ? 0 : volume} 
+                onChange={handleVolumeChange}
+                className="pill-volume-slider-always-visible"
+                aria-label="Volume"
+                style={{
+                  background: `linear-gradient(to right, #fff ${isMuted ? 0 : volume}%, rgba(255, 255, 255, 0.2) ${isMuted ? 0 : volume}%)`
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
