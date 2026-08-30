@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import bg1 from '../../assets/bg1.png';
-import bg2_png from '../../assets/bg2.png';
-import bg2_jpg from '../../assets/bg2.jpg';
+import bg2 from '../../assets/bg2.png';
 import bg3 from '../../assets/bg3.png';
 import bg4 from '../../assets/bg4.png';
+import bg5 from '../../assets/bg5.png';
+import bg6 from '../../assets/bg6.png';
+import bg7 from '../../assets/bg7.png';
+import bg8 from '../../assets/bg8.png';
 import './CinematicBackground.css';
 
-const backgrounds = [bg1, bg2_png, bg2_jpg, bg3, bg4];
+const backgrounds = [bg1, bg2, bg3, bg4, bg5, bg6, bg7, bg8];
 
 export const CinematicBackground: React.FC = () => {
   const currentTrackId = usePlayerStore(state => state.currentTrack?.id);
