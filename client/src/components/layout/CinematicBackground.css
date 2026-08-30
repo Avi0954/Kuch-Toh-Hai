@@ -9,6 +9,19 @@
   background-color: #0f121a; /* Fallback */
 }
 
+/* Add a dark cinematic vignette to the bottom right to obscure the watermark perfectly */
+.cinematic-bg-container::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle at bottom right, rgba(0,0,0,1) 15%, rgba(0,0,0,0.8) 35%, transparent 75%);
+  z-index: 2;
+  pointer-events: none;
+}
+
 .cinematic-bg-image {
   position: absolute;
   top: 0;
@@ -23,9 +36,8 @@
   image-rendering: high-quality;
   image-rendering: -webkit-optimize-contrast;
   
-  /* Scale from the top left to force all the crop to the bottom-right corner */
-  transform-origin: top left;
-  transform: scale(1.15);
+  /* Slight scale to prevent edge bleeding */
+  transform: scale(1.05);
 }
 
 .cinematic-bg-image.active {
