@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PlayerManager } from '../../services/PlayerManager';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import './UnifiedPlayerView.css';
@@ -23,6 +23,8 @@ export const UnifiedPlayerView: React.FC = () => {
   // Player State
   const currentTrack = usePlayerStore(state => state.currentTrack);
   const isPlaying = usePlayerStore(state => state.isPlaying);
+  const volume = usePlayerStore(state => state.volume);
+  const isMuted = usePlayerStore(state => state.isMuted);
   const progressMs = usePlayerStore(state => state.progressMs);
   const durationMs = currentTrack?.durationMs || 0;
   const progressPercent = durationMs > 0 ? (progressMs / durationMs) * 100 : 0;
@@ -43,6 +45,10 @@ export const UnifiedPlayerView: React.FC = () => {
   const togglePlay = () => PlayerManager.togglePlay();
   const handleNext = () => PlayerManager.next();
   const handlePrev = () => PlayerManager.previous();
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    PlayerManager.setVolume(Number(e.target.value));
+  };
+  const toggleMute = () => PlayerManager.toggleMute();
 
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!durationMs) return;
@@ -107,6 +113,23 @@ export const UnifiedPlayerView: React.FC = () => {
               <button className="btn-invisible pill-control-btn" onClick={handleNext} aria-label="Next">
                 <ChevronRight size={18} />
               </button>
+            </div>
+            <div className="pill-volume-always-visible">
+              <button className="btn-invisible pill-utility-btn-small" onClick={toggleMute} aria-label="Mute">
+                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+              </button>
+              <input 
+                type="range" 
+                min="0" 
+                max="100" 
+                value={isMuted ? 0 : volume} 
+                onChange={handleVolumeChange}
+                className="pill-volume-slider-always-visible"
+                aria-label="Volume"
+                style={{
+                  background: `linear-gradient(to right, #fff ${isMuted ? 0 : volume}%, rgba(255, 255, 255, 0.2) ${isMuted ? 0 : volume}%)`
+                }}
+              />
             </div>
           </div>
         </div>

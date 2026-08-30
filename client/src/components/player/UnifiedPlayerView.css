@@ -36,7 +36,7 @@
 
 .unified-logo {
   font-family: 'Great Vibes', cursive;
-  font-size: 6.5rem; /* Script fonts usually need to be a bit larger */
+  font-size: 5rem;
   font-weight: 400; /* Regular weight */
   letter-spacing: 0.01em; /* Less spacing for script fonts to connect properly */
   color: #fcfaf5; /* Warm ivory/off-white */
