@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Pause, Volume2, VolumeX, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PlayerManager } from '../../services/PlayerManager';
 import { usePlayerStore } from '../../store/usePlayerStore';
@@ -30,6 +30,17 @@ export const UnifiedPlayerView: React.FC = () => {
   const progressPercent = durationMs > 0 ? (progressMs / durationMs) * 100 : 0;
 
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const [currentTime, setCurrentTime] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Actions
   const togglePlay = () => PlayerManager.togglePlay();
@@ -56,6 +67,7 @@ export const UnifiedPlayerView: React.FC = () => {
 
   return (
     <main className="unified-container animate-fade-in">
+      <div className="unified-clock">{currentTime}</div>
       <header className="unified-header">
         <h1 className="unified-logo">Kuch Toh Hai.</h1>
       </header>

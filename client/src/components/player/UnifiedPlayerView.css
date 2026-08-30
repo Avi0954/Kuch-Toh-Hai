@@ -21,6 +21,19 @@
   width: 100%;
 }
 
+.unified-clock {
+  position: absolute;
+  top: 40px;
+  left: 48px;
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  z-index: 20;
+}
+
 .unified-logo {
   font-family: 'Cormorant Garamond', 'Playfair Display', serif;
   font-size: 5.5rem;
@@ -355,6 +368,12 @@
 @media (max-width: 768px) {
   .unified-container {
     padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .unified-clock {
+    top: 24px;
+    left: 24px;
+    font-size: 1rem;
   }
 
   .pill-wrapper {
