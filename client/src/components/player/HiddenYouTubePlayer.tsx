@@ -8,6 +8,17 @@ export const HiddenYouTubePlayer: React.FC = () => {
 
   const onReady = (event: YouTubeEvent) => {
     PlayerManager.attachPlayer(event.target);
+    
+    // The YouTube iframe can sometimes steal focus and intercept hardware media keys.
+    // By forcing tabindex to -1, we ensure it never receives focus, allowing the OS to handle volume.
+    try {
+      const iframe = event.target.getIframe();
+      if (iframe) {
+        iframe.setAttribute('tabindex', '-1');
+      }
+    } catch (err) {
+      console.warn("Could not set tabindex on YouTube iframe", err);
+    }
   };
 
   const onStateChange = (event: YouTubeEvent) => {
