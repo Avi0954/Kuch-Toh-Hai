@@ -38,6 +38,7 @@ export type PlayerState = {
   volume: number;
   isMuted: boolean;
   status: 'IDLE' | 'LOADING' | 'PLAYING' | 'PAUSED' | 'BUFFERING' | 'ERROR';
+  errorMessage?: string;
   playerReady: boolean;
 };
 

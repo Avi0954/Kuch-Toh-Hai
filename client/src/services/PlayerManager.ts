@@ -16,9 +16,14 @@ class PlayerManagerService {
     this.ytPlayer.setVolume(state.isMuted ? 0 : state.volume);
   }
 
+  private initTimeout: number | null = null;
+
   public loadQueue(tracks: Track[], startIndex: number = 0) {
     if (tracks.length === 0) return;
     
+    this.clearErrorRecovery();
+    this.clearInitTimeout();
+
     usePlayerStore.getState().updateState({
       queue: tracks,
       currentIndex: startIndex,
@@ -27,13 +32,31 @@ class PlayerManagerService {
       progressMs: 0,
       status: 'LOADING',
       isPlaying: true, // Auto-play when loading a new queue
+      errorMessage: undefined,
     });
+
+    // Safety timeout: if player isn't ready/playing in 10s, throw an error
+    this.initTimeout = window.setTimeout(() => {
+      const state = usePlayerStore.getState();
+      if (state.status === 'LOADING' || state.status === 'BUFFERING') {
+        usePlayerStore.getState().updateState({ 
+          status: 'ERROR', 
+          isPlaying: false,
+          errorMessage: 'Network slow hai. Thoda intezaar karein ya agla gaana sunein.'
+        });
+        
+        // Auto-skip after 5 seconds on timeout
+        this.errorTimeout = window.setTimeout(() => {
+          this.next();
+        }, 5000);
+      }
+    }, 10000);
   }
 
   public play() {
     if (this.ytPlayer && usePlayerStore.getState().currentTrack) {
       this.ytPlayer.playVideo();
-      usePlayerStore.getState().updateState({ isPlaying: true, status: 'PLAYING' });
+      usePlayerStore.getState().updateState({ isPlaying: true, status: 'PLAYING', errorMessage: undefined });
       this.startProgressTracking();
     }
   }
@@ -57,6 +80,7 @@ class PlayerManagerService {
 
   public next() {
     this.clearErrorRecovery();
+    this.clearInitTimeout();
     const state = usePlayerStore.getState();
     if (state.queue.length === 0) return;
 
@@ -76,6 +100,7 @@ class PlayerManagerService {
 
   public previous() {
     this.clearErrorRecovery();
+    this.clearInitTimeout();
     const state = usePlayerStore.getState();
     if (state.queue.length === 0) return;
 
@@ -126,7 +151,8 @@ class PlayerManagerService {
         break;
       case 1: // Playing
         this.clearErrorRecovery();
-        usePlayerStore.getState().updateState({ status: 'PLAYING', isPlaying: true });
+        this.clearInitTimeout();
+        usePlayerStore.getState().updateState({ status: 'PLAYING', isPlaying: true, errorMessage: undefined });
         this.startProgressTracking();
         break;
       case 2: // Paused
@@ -141,7 +167,18 @@ class PlayerManagerService {
 
   public onError(errorData: number) {
     console.error('YouTube Player Error:', errorData);
-    usePlayerStore.getState().updateState({ status: 'ERROR', isPlaying: false });
+    this.clearInitTimeout();
+    
+    // Map YouTube specific errors to friendly Hindi UI messages
+    let message = 'Ye gaana abhi nahi mil raha. Agla wala sunte hain.';
+    if (errorData === 2) message = 'Invalid track... Agla gaana sunte hain.';
+    if (errorData === 101 || errorData === 150) message = 'Ye gaana embed nahi ho sakta. Skipping...';
+    
+    usePlayerStore.getState().updateState({ 
+      status: 'ERROR', 
+      isPlaying: false,
+      errorMessage: message
+    });
     this.stopProgressTracking();
 
     // Auto-skip after 3 seconds on error
@@ -175,6 +212,13 @@ class PlayerManagerService {
     if (this.errorTimeout) {
       clearTimeout(this.errorTimeout);
       this.errorTimeout = null;
+    }
+  }
+
+  private clearInitTimeout() {
+    if (this.initTimeout) {
+      clearTimeout(this.initTimeout);
+      this.initTimeout = null;
     }
   }
 }

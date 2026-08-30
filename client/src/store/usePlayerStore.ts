@@ -16,6 +16,7 @@ export const usePlayerStore = create<PlayerStore>((set) => ({
   isMuted: false,
   status: 'IDLE',
   playerReady: false,
+  errorMessage: undefined,
 
   updateState: (partialState) => set((state) => ({ ...state, ...partialState })),
 }));

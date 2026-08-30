@@ -1,34 +1,37 @@
-import React from 'react';
-import { useJourneyStore } from '../../store/useJourneyStore';
-import { FilmGrain } from '../visual/FilmGrain';
-import { Vignette } from '../visual/Vignette';
-import { BokehLights } from '../visual/BokehLights';
-import { DustParticles } from '../visual/DustParticles';
+import React, { useState, useEffect } from 'react';
+import { usePlayerStore } from '../../store/usePlayerStore';
+import bg1 from '../../assets/bg1.jpg';
+import bg2 from '../../assets/bg2.jpg';
+import bg3 from '../../assets/bg3.jpg';
 import './CinematicBackground.css';
 
+const backgrounds = [bg1, bg2, bg3];
+
 export const CinematicBackground: React.FC = () => {
-  const { ambientColor } = useJourneyStore();
+  const currentTrackId = usePlayerStore(state => state.currentTrack?.id);
+  const [bgIndex, setBgIndex] = useState(0);
+
+  // Change background whenever the song changes
+  useEffect(() => {
+    if (currentTrackId) {
+      setBgIndex(prev => (prev + 1) % backgrounds.length);
+    }
+  }, [currentTrackId]);
 
   return (
-    <>
-      {/* Base Layer */}
-      <div 
-        className="cinematic-bg-container"
-        style={{
-          backgroundColor: ambientColor,
-          opacity: 1
-        }}
-      >
-        <div className="gradient-overlay"></div>
-      </div>
-
-      {/* Atmospheric FX Layers */}
-      <BokehLights />
-      <DustParticles />
-
-      {/* Persistent Lens FX Layers */}
-      <Vignette />
-      <FilmGrain />
-    </>
+    <div className="cinematic-bg-container">
+      {/* Primary Background Image */}
+      {backgrounds.map((bg, idx) => (
+        <img 
+          key={bg}
+          src={bg} 
+          alt="Background" 
+          className={`cinematic-bg-image ${idx === bgIndex ? 'active' : ''}`}
+        />
+      ))}
+      
+      {/* Dark overlay to ensure UI legibility */}
+      <div className="gradient-overlay"></div>
+    </div>
   );
 };
