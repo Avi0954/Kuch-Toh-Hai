@@ -40,18 +40,6 @@ export const useGlobalKeybinds = () => {
             PlayerManager.seek(Math.max(0, state.progressMs - 10000)); // Seek backward 10s
           }
           break;
-
-        case 'ArrowUp':
-          e.preventDefault(); // Prevent page scroll
-          const currentVolUp = usePlayerStore.getState().volume;
-          PlayerManager.setVolume(Math.min(100, currentVolUp + 5));
-          break;
-
-        case 'ArrowDown':
-          e.preventDefault(); // Prevent page scroll
-          const currentVolDown = usePlayerStore.getState().volume;
-          PlayerManager.setVolume(Math.max(0, currentVolDown - 5));
-          break;
       }
     };
 

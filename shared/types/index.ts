@@ -35,8 +35,6 @@ export type PlayerState = {
   isPlaying: boolean;
   progressMs: number;
   durationMs: number;
-  volume: number;
-  isMuted: boolean;
   status: 'IDLE' | 'LOADING' | 'PLAYING' | 'PAUSED' | 'BUFFERING' | 'ERROR';
   errorMessage?: string;
   playerReady: boolean;
