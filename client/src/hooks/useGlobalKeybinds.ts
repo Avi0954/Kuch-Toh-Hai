@@ -14,6 +14,13 @@ export const useGlobalKeybinds = () => {
       
       if (isInput) return;
 
+      // Ensure we only process explicitly handled keys and immediately ignore everything else
+      // (like Volume Up, Volume Down, Mute, Play/Pause media keys)
+      const allowedKeys = [' ', 'Spacebar', 'ArrowRight', 'ArrowLeft'];
+      if (!allowedKeys.includes(e.key)) {
+        return;
+      }
+
       switch (e.key) {
         case ' ':
         case 'Spacebar':
