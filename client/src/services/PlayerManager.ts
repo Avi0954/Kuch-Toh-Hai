@@ -77,6 +77,11 @@ class PlayerManagerService {
 
   public setVolume(level: number) {
     if (this.ytPlayer) {
+      if (level > 0 && typeof this.ytPlayer.unMute === 'function') {
+        this.ytPlayer.unMute();
+      } else if (level === 0 && typeof this.ytPlayer.mute === 'function') {
+        this.ytPlayer.mute();
+      }
       this.ytPlayer.setVolume(level);
     }
     usePlayerStore.getState().updateState({ volume: level, isMuted: level === 0 });
@@ -85,14 +90,20 @@ class PlayerManagerService {
   public toggleMute() {
     const state = usePlayerStore.getState();
     const newMuted = !state.isMuted;
+    
+    // If we're unmuting and volume was 0, default to 50%
+    const restoreVolume = (state.volume === 0 && !newMuted) ? 50 : state.volume;
+
     if (this.ytPlayer) {
       if (newMuted) {
+        if (typeof this.ytPlayer.mute === 'function') this.ytPlayer.mute();
         this.ytPlayer.setVolume(0);
       } else {
-        this.ytPlayer.setVolume(state.volume);
+        if (typeof this.ytPlayer.unMute === 'function') this.ytPlayer.unMute();
+        this.ytPlayer.setVolume(restoreVolume);
       }
     }
-    usePlayerStore.getState().updateState({ isMuted: newMuted });
+    usePlayerStore.getState().updateState({ isMuted: newMuted, volume: newMuted ? 0 : restoreVolume });
   }
 
   // --- YouTube Event Handlers ---
