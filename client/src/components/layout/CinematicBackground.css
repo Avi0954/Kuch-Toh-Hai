@@ -18,6 +18,14 @@
   object-fit: cover;
   opacity: 0;
   transition: opacity 3s ease-in-out;
+  /* Image Enhancement for low-res images */
+  filter: contrast(1.15) saturate(1.2) brightness(0.95) drop-shadow(0 0 10px rgba(0,0,0,0.5));
+  image-rendering: high-quality;
+  image-rendering: -webkit-optimize-contrast;
+  
+  /* Scale from the top left to force all the crop to the bottom-right corner */
+  transform-origin: top left;
+  transform: scale(1.15);
 }
 
 .cinematic-bg-image.active {
